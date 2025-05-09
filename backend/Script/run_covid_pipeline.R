@@ -15,6 +15,7 @@ source("../../../Script/c19_modules/NodeIDgenerator.R")
 
 cat("🚀 Running: Human_node_quantification_Location_node_tabulation.R\n")
 source("../../../Script/c19_modules/Human_node_quantification_Location_node_tabulation.R")
+source("../../../Script/c19_modules/plotContactGraph.R")
 
 cat("🚀 Running: location_node_quantification.R\n")
 source("../../../Script/c19_modules/location_node_quantification.R")

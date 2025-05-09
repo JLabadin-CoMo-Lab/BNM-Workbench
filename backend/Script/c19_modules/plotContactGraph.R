@@ -1,0 +1,30 @@
+library(tidygraph)
+library(ggraph)
+library(dplyr)
+
+# Prepare edges
+
+df <- read.table('Human_Node.txt',header = T)
+edges <- df %>% select(from = Human, to = Location.ID)
+
+# Create node list
+nodes <- data.frame(name = unique(c(edges$from, edges$to)))
+
+# Add a type column (Human or Location)
+nodes <- nodes %>%
+  mutate(type = ifelse(grepl("^L", name), "Location", "Human"))
+
+# Create graph
+graph <- tbl_graph(nodes = nodes, edges = edges, directed = FALSE)
+
+# Plot
+bnm_plot <- ggraph(graph, layout = "fr") +
+  geom_edge_link(color = "grey") +
+  geom_node_point(aes(color = type), size = 3) +
+  geom_node_text(aes(label = name), repel = TRUE, size = 3) +
+  scale_color_manual(values = c("Human" = "black", "Location" = "orange")) +
+  theme_void()
+
+png(filename = 'contact_diagram.png')
+bnm_plot
+dev.off()
