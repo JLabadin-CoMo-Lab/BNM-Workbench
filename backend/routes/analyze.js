@@ -83,4 +83,45 @@ router.get('/download-zip', (req, res) => {
   archive.finalize();
 });
 
+router.post('/hotspot-redirect', (req, res) => {
+  const { username, module } = getSession();
+
+  if (!username || !module) {
+    return res.send(`<h2>❌ Session expired. Please <a href="/">log in again</a>.</h2>`);
+  }
+
+  const userPath = path.join(__dirname, '..', 'uploads', username, module);
+  const scriptPath = path.join(__dirname, '..', 'Script', 'generate_hotspot_json.R');
+  const cmd = `Rscript "${scriptPath}"`;
+
+  exec(cmd, { cwd: userPath }, (err, stdout, stderr) => {
+    if (err) {
+      return res.send(`<h2>❌ Hotspot JSON generation failed:</h2><pre>${stderr}</pre>`);
+    }
+
+    res.redirect(`/hotspot-map.html?user=${encodeURIComponent(username)}&module=${encodeURIComponent(module)}`);
+
+  });
+});
+
+router.get('/hotspot-json', (req, res) => {
+  const { user, module } = req.query;
+
+  if (!user || !module) {
+    return res.status(400).send("❌ Missing user/module in query.");
+  }
+
+  const jsonPath = path.join(__dirname, '..', 'uploads', user, module, 'res', 'hotspot.json');
+
+  if (!fs.existsSync(jsonPath)) {
+    return res.status(404).send("❌ Hotspot JSON not found.");
+  }
+
+  res.sendFile(jsonPath);
+});
+
+
+
+
+
 module.exports = router;

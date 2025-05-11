@@ -15,8 +15,14 @@
 
     <h5>Download Individual Files:</h5>
     <ul id="resultList" class="list-group"></ul>
-    <a href="/select-module.html" class="btn btn-sm btn-outline-secondary mb-3">← Back to Home</a>
 
+    <div class="mt-4">
+      <form action="/hotspot-redirect" method="POST">
+        <button type="submit" class="btn btn-outline-danger">🔍 Visualise Hotspot Map</button>
+      </form>
+    </div>
+
+    <a href="/select-module.html" class="btn btn-sm btn-outline-secondary mt-3">← Back to Home</a>
   </div>
 
   <script>
@@ -54,6 +60,5 @@
         });
     }
   </script>
-
 </body>
 </html>

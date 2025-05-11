@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dengue Hotspot Map</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {
+      background-color: white;
+    }
+    #map {
+      height: 600px;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .hotspot-card {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .hotspot-card:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid mt-4 px-4">
+    <h2 class="mb-3 text-primary">🔥 Dengue Cluster Hotspot Map</h2>
+
+    <div id="map"></div>
+
+    <div class="mt-4">
+      <h5>🧭 Navigate to Cluster:</h5>
+      <select id="hotspotDropdown" class="form-select w-auto mb-3">
+        <option disabled selected>Choose a hotspot...</option>
+      </select>
+
+      <div id="hotspotList" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"></div>
+    </div>
+
+    <div id="errorMsg" class="text-danger mt-3"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('user');
+    const module = params.get('module');
+
+    if (!user || !module) {
+      document.getElementById('errorMsg').textContent = "❌ Missing user or module information.";
+    } else {
+      fetch(`/hotspot-json?user=${encodeURIComponent(user)}&module=${encodeURIComponent(module)}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to fetch hotspot.json");
+          return res.json();
+        })
+        .then(data => {
+          const map = L.map('map').setView([1.5, 110.4], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+          const dropdown = document.getElementById('hotspotDropdown');
+          const cardList = document.getElementById('hotspotList');
+          const hotspotRefs = [];
+
+          let highestScore = -1;
+          let topHotspot = null;
+
+          data.forEach((d, i) => {
+            const radius = d.score * 200 + 100;
+            const color = d.score > 0.8 ? 'red' :
+                          d.score > 0.5 ? 'orange' : 'yellow';
+
+            const circle = L.circle([d.lat, d.lng], {
+              radius: radius,
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.4,
+              weight: 1
+            }).addTo(map).bindPopup(`Cluster: ${d.cluster}<br>Score: ${d.score}`);
+
+            hotspotRefs[i] = { lat: d.lat, lng: d.lng, popup: circle };
+
+            if (d.score > highestScore) {
+              highestScore = d.score;
+              topHotspot = { lat: d.lat, lng: d.lng };
+            }
+
+            // Add to dropdown
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `Cluster ${d.cluster} (${d.score})`;
+            dropdown.appendChild(option);
+
+            // Add card
+            const col = document.createElement('div');
+            col.className = 'col';
+            col.innerHTML = `
+              <div class="card hotspot-card shadow-sm h-100">
+                <div class="card-body">
+                  <h6 class="card-title text-primary mb-2">Cluster ${d.cluster}</h6>
+                  <p class="card-text mb-0">Score: <strong>${d.score}</strong></p>
+                  <p class="card-text text-muted small mb-0">Lat: ${d.lat.toFixed(4)}, Lng: ${d.lng.toFixed(4)}</p>
+                </div>
+              </div>
+            `;
+            col.onclick = () => {
+              map.setView([d.lat, d.lng], 16);
+              circle.openPopup();
+            };
+            cardList.appendChild(col);
+          });
+
+          dropdown.onchange = () => {
+            const i = parseInt(dropdown.value);
+            const { lat, lng, popup } = hotspotRefs[i];
+            map.setView([lat, lng], 16);
+            popup.openPopup();
+          };
+
+          if (topHotspot) {
+            map.setView([topHotspot.lat, topHotspot.lng], 16);
+          }
+        })
+        .catch(err => {
+          document.getElementById('errorMsg').textContent = "❌ Failed to load hotspot data.";
+          console.error(err);
+        });
+    }
+  </script>
+</body>
+</html>
