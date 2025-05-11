@@ -1,0 +1,60 @@
+library(googleway)
+
+# === Step 1: Read movement list ===
+movement <- read.table("movement_list.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+unique_locations <- unique(movement$LocationName)
+
+# === Step 2: Load existing geocoded data if available ===
+if (file.exists("location_list.txt")) {
+  existing_geo <- read.table("location_list.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+} else {
+  existing_geo <- data.frame(
+    LocationName = character(), Lat = numeric(), Lng = numeric(),
+    Elevation = numeric(), ClusterID = character(), LocationID = character(),
+    stringsAsFactors = FALSE
+  )
+}
+
+# === Step 3: Identify missing locations ===
+missing_locations <- setdiff(unique_locations, existing_geo$LocationName)
+
+# === Step 4: Geocode and elevate missing locations ===
+if (length(missing_locations) > 0) {
+  geocoding_results <- lapply(missing_locations, function(loc) {
+    result <- google_geocode(address = loc, key = geocoding_key)
+    list(
+      LocationName = loc,
+      Lat = result$results$geometry$location$lat[1],
+      Lng = result$results$geometry$location$lng[1]
+    )
+  })
+  
+  geo_new <- do.call(rbind, lapply(geocoding_results, as.data.frame))
+  
+  elev_data <- google_elevation(
+    df_locations = data.frame(lat = geo_new$Lat, lon = geo_new$Lng),
+    key = geocoding_key,
+    simplify = TRUE
+  )
+  geo_new$Elevation <- elev_data$results$elevation
+  geo_new$ClusterID <- NA
+  geo_new$LocationID <- NA
+  
+  full_geo <- rbind(existing_geo, geo_new)
+} else {
+  full_geo <- existing_geo
+}
+
+# === Step 5: Filter to current session's locations and deduplicate ===
+final_geo <- full_geo[full_geo$LocationName %in% unique_locations, ]
+final_geo <- final_geo[!duplicated(final_geo$LocationName, fromLast = TRUE), ]
+
+# === Step 6: Assign LocationID as l1, l2, l3, ... ===
+final_geo$LocationID <- paste0("l", seq_len(nrow(final_geo)))
+
+# === Step 7: Save updated location list ===
+write.table(final_geo, "location_list.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+
+# === Step 8: Merge LocationID back into movement list ===
+movement <- merge(movement, final_geo[, c("LocationName", "LocationID")], by = "LocationName", all.x = TRUE)
+write.table(movement, "movement_list_with_LID.txt", sep = "\t", row.names = FALSE, quote = FALSE)

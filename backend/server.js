@@ -11,6 +11,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static file access
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
+
 app.use('/downloads', express.static(path.join(__dirname, 'uploads')));
 
 // Route modules

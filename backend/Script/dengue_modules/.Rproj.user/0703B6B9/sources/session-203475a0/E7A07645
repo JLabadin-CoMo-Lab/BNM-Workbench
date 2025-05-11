@@ -1,0 +1,27 @@
+{
+    "id": "E7A07645",
+    "path": "~/Documents/GitHub(personal)/test_BNM/bnm_workbench/backend/Script/dengue_modules/HumanNode_LinkWeight_HITS.R",
+    "project_path": "HumanNode_LinkWeight_HITS.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1746941138939.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "115,28",
+        "scrollLine": "114"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1746941145,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1746941145499,
+    "read_only": false,
+    "read_only_alternatives": []
+}

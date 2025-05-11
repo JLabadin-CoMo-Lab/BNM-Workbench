@@ -1,0 +1,41 @@
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) < 2) {
+  stop("Usage: Rscript run_dengue_pipeline.R <working_dir> <clustering_radius>")
+}
+
+working_dir <- normalizePath(args[1], mustWork = FALSE)
+radius <- as.numeric(args[2])
+
+if (is.na(radius) || radius <= 0) {
+  stop("❌ Invalid clustering radius. Must be a positive number.")
+}
+
+setwd(working_dir)
+output_dir <- file.path(working_dir, "res")
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+cat("📌 Working directory set to:", working_dir, "\n")
+cat("📏 Clustering radius set to:", radius, "meters\n")
+
+# Expose radius globally
+assign("CLUSTER_RADIUS", radius, envir = .GlobalEnv)
+
+# Load API key
+source(normalizePath("../../../Script/api_key.R"))
+
+# Step-by-step dengue modules
+cat("🚀 Running: Location Processing\n")
+source(normalizePath("../../../Script/dengue_modules/locationProcessing.R"))
+
+cat("🚀 Running: Location Node Clustering\n")
+source(normalizePath("../../../Script/dengue_modules/locationClustering.R"))
+
+cat("🚀 Running: Location Node Quantification\n")
+source(normalizePath("../../../Script/dengue_modules/location_node_quantification.R"))
+
+cat("🚀 Running: Human Node & Link Weight Quantification & HITS\n")
+source(normalizePath("../../../Script/dengue_modules/HumanNode_LinkWeight_HITS.R"))
+#source(normalizePath("../../../Script/dengue_modules/plotGraph.R"))
+
+cat("✅ Dengue BNM full pipeline completed.\n")

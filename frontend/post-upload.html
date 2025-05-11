@@ -1,0 +1,27 @@
+<!-- post-upload.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post Upload</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  
+  <div class="container mt-5">
+    <h2 id="uploadMsg" class="mb-4 text-success"></h2>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const user = params.get('user') || 'Unknown';
+  const module = params.get('module') || 'Unknown';
+  document.getElementById('uploadMsg').textContent = `✅ Files uploaded successfully to folder: ${user}/${module}`;
+</script>
+    <p>Do you want to proceed with the analysis?</p>
+    <form method="POST" action="/analyze">
+      <button type="submit" name="proceed" value="yes" class="btn btn-success">Yes, Proceed</button>
+      <button type="submit" name="proceed" value="no" class="btn btn-secondary">No, Exit</button>
+    </form>
+  </div>
+</body>
+</html>

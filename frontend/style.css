@@ -1,0 +1,49 @@
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.login-container,
+.register-container {
+  max-width: 450px;
+  margin: 80px auto;
+}
+
+.login-card,
+.register-card {
+  background-color: #1c1c1c;
+  color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.form-control {
+  background-color: white;
+}
+
+.form-control::placeholder {
+  color: #aaa;
+}
+
+.btn-login,
+.btn-register {
+  background-color: #1c1c1c;
+  border: 2px solid white;
+  color: white;
+  font-weight: bold;
+}
+
+.btn-login:hover,
+.btn-register:hover {
+  background-color: #343a40;
+}
+
+h2.text-danger {
+  font-weight: bold;
+}
+
+h4 {
+  text-align: center;
+}
+

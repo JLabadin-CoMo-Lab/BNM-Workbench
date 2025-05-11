@@ -1,14 +1,12 @@
 library(matlib)
 
-cs_matrix <- as.matrix(read.table('contact_matrix.txt',sep = '\t'))
+cs_matrix <- as.matrix(read.table('res/contact_matrix.txt',sep = '\t'))
 l <-  as.matrix(cs_matrix)%*%t(cs_matrix)
 lsize <- nrow(l)
-#write.table(l,"467a/Loc_UCN_contact_matrix.txt",sep = '\t',row.names = TRUE,col.names = TRUE)
 
 # auth(patient)
 h <-  t(cs_matrix)%*%as.matrix(cs_matrix)
 hsize <- nrow(h)
-#write.table(h,"467a/Hum_UCN_contact_matrix.txt",sep = '\t',row.names = TRUE,col.names = TRUE)
 
 auth <- c(rep(1,hsize))
 hub <- c(rep(1,lsize))
@@ -44,5 +42,5 @@ hotspot <- hotspot[order(hotspot$ranking),]
 human_rank <- human_rank[order(human_rank$ranking),]
 
 
-write.table(hotspot,'hotspot.txt',sep = '\t',row.names = FALSE,col.names = TRUE,quote = F)
-write.table(human_rank,'human_rank.txt',sep = '\t',row.names = FALSE,col.names = TRUE, quote = F)
+write.table(hotspot,'res/hotspot.txt',sep = '\t',row.names = FALSE,col.names = TRUE,quote = F)
+write.table(human_rank,'res/human_rank.txt',sep = '\t',row.names = FALSE,col.names = TRUE, quote = F)

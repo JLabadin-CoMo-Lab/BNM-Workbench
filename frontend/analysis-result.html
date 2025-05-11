@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Analysis Result</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h2 id="resultTitle" class="mb-4 text-primary">🦠 Analysis Result</h2>
+
+    <div class="mb-3">
+      <a id="zipDownload" class="btn btn-outline-secondary" href="/download-zip" target="_blank">📦 Download All as ZIP</a>
+    </div>
+
+    <h5>Download Individual Files:</h5>
+    <ul id="resultList" class="list-group"></ul>
+    <a href="/select-module.html" class="btn btn-sm btn-outline-secondary mb-3">← Back to Home</a>
+
+  </div>
+
+  <script>
+    const resultList = document.getElementById('resultList');
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get('user');
+    const module = params.get('module');
+
+    if (!username || !module) {
+      resultList.innerHTML = '<li class="list-group-item text-danger">Missing session info.</li>';
+    } else {
+      fetch('/list-outputs')
+        .then(res => res.json())
+        .then(files => {
+          if (!Array.isArray(files) || files.length === 0) {
+            resultList.innerHTML = '<li class="list-group-item text-danger">No output files found.</li>';
+            return;
+          }
+
+          files.forEach(file => {
+            const li = document.createElement('li');
+            li.classList.add('list-group-item');
+
+            const link = document.createElement('a');
+            link.href = `/downloads/${encodeURIComponent(username)}/${encodeURIComponent(module)}/res/${encodeURIComponent(file)}`;
+            link.textContent = file;
+            link.target = '_blank';
+
+            li.appendChild(link);
+            resultList.appendChild(li);
+          });
+        })
+        .catch(() => {
+          resultList.innerHTML = '<li class="list-group-item text-danger">Failed to load output files.</li>';
+        });
+    }
+  </script>
+
+</body>
+</html>

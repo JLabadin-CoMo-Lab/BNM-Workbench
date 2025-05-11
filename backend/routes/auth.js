@@ -7,14 +7,7 @@ const router = express.Router();
 const USER_FILE = path.join(__dirname, '..', 'userID.txt');
 
 router.get('/', (req, res) => {
-  res.send(`
-    <h2>Login to Upload Files</h2>
-    <form method="POST" action="/login">
-      <label>Username: <input name="username" /></label><br/>
-      <label>Password: <input name="password" type="password" /></label><br/>
-      <button type="submit">Login</button>
-    </form>
-  `);
+  res.redirect('/index.html');
 });
 
 router.post('/login', (req, res) => {
@@ -29,18 +22,10 @@ router.post('/login', (req, res) => {
   });
 
   if (!match) {
-    return res.send(`
-      <h2>User not found. Register?</h2>
-      <form method="POST" action="/register">
-        <input name="username" value="${username}" /><br/>
-        <input name="password" type="password" /><br/>
-        <input name="email" placeholder="Email" /><br/>
-        <button type="submit">Register</button>
-      </form>
-    `);
+    res.redirect('/register.html');
   }
 
-  res.redirect('/select-module');
+  res.redirect('/select-module.html');
 });
 
 router.post('/register', (req, res) => {

@@ -5,47 +5,43 @@ const { setSession, getSession } = require('../utils/session');
 
 const router = express.Router();
 
-router.get('/select-module', (req, res) => {
-  res.send(`
-    <h2>Select Module</h2>
-    <form method="POST" action="/select-module">
-      <label>Select Module:</label><br/>
-      <select name="module">
-        <option value="COVID-19">COVID-19</option>
-        <option value="Dengue" disabled>Dengue (coming soon)</option>
-        <option value="Subfunction" disabled>Subfunction (coming soon)</option>
-      </select><br/><br/>
-      <button type="submit">Continue</button>
-    </form>
-  `);
-});
-
-
 router.post('/select-module', (req, res) => {
-  const { module } = req.body;
-  setSession(getSession().username, module);
+  const { module, radius } = req.body;
+  const supportedModules = ['COVID-19', 'Dengue'];
+
+  if (!supportedModules.includes(module)) {
+    return res.status(400).send(`❌ Invalid module "${module}".`);
+  }
 
   const { username } = getSession();
-  const userPath = path.join(__dirname, '..', 'uploads', username, module);
 
-  const hasUploaded =
-    fs.existsSync(path.join(userPath, 'contact_tracing.txt')) ||
-    fs.existsSync(path.join(userPath, 'human_meta.txt'));
+  if (module === 'Dengue') {
+    const radiusVal = (!radius || isNaN(radius) || parseFloat(radius) <= 0) ? '400' : radius;
+    setSession(username, module, radiusVal);
+  } else {
+    setSession(username, module);
+  }
 
-  const warning = hasUploaded
-    ? `<p style="color:red;"><strong>⚠️ Warning:</strong> Data already exists for module <strong>${module}</strong>. Uploading new files will overwrite the current data.</p>`
-    : '';
+  const baseDir = path.join(__dirname, '..', 'uploads', username, module);
+  const outputDir = path.join(baseDir, 'res');
 
-  res.send(`
-    <h2>Upload Files for ${module}</h2>
-    ${warning}
-    <form method="POST" action="/upload" enctype="multipart/form-data">
-      <label>Contact Tracing File: <input type="file" name="contactTracing" /></label><br/>
-      <label>Human Metadata File: <input type="file" name="humanMeta" /></label><br/>
-      <button type="submit">Upload</button>
-    </form>
-  `);
+  let inputsExist = false;
+
+  if (module === 'COVID-19') {
+    inputsExist = fs.existsSync(path.join(baseDir, 'contact_tracing.txt')) &&
+                  fs.existsSync(path.join(baseDir, 'human_meta.txt')); // ✅ fixed
+  } else if (module === 'Dengue') {
+    inputsExist = fs.existsSync(path.join(baseDir, 'movement_list.txt'));
+  }
+
+  const outputExists = fs.existsSync(outputDir) && fs.readdirSync(outputDir).length > 0;
+
+  const qs = `?user=${encodeURIComponent(username)}&module=${encodeURIComponent(module)}`;
+  if (inputsExist && outputExists) {
+    return res.redirect(`/reuse-or-upload.html${qs}`);
+  }
+  return res.redirect(`/upload.html${qs}`);
+
 });
 
 module.exports = router;
-

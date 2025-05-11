@@ -1,0 +1,50 @@
+library(geosphere)
+
+# === CONFIG ===
+input_file <- "res/location_list.txt"
+output_file <- "res/location_list.txt"
+node_summary_file <- "res/LocationNode_list.txt"
+distance_threshold <- radius  # meters
+
+# === Step 1: Read location data ===
+loc <- read.table(input_file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+loc <- loc[!is.na(loc$Lat) & !is.na(loc$Lng), ]
+coords <- loc[, c("Lng", "Lat")]
+
+# === Step 2: Calculate distance matrix ===
+dist_matrix <- distm(coords, fun = distHaversine)
+
+# === Step 3: Assign ClusterIDs ===
+n <- nrow(dist_matrix)
+cluster_ids <- rep(NA, n)
+current_cluster <- 1
+
+for (i in seq_len(n)) {
+  if (is.na(cluster_ids[i])) {
+    cluster_ids[i] <- current_cluster
+    in_cluster <- which(dist_matrix[i, ] <= distance_threshold)
+    cluster_ids[in_cluster] <- current_cluster
+    current_cluster <- current_cluster + 1
+  }
+}
+
+loc$ClusterID <- paste0("L", cluster_ids)
+
+# === Step 4: Save updated location list ===
+write.table(loc, output_file, sep = "\t", row.names = FALSE, quote = FALSE)
+
+# === Step 5: Build LocationNode_list.txt ===
+cluster_summary <- do.call(rbind, lapply(unique(loc$ClusterID), function(cid) {
+  subset <- loc[loc$ClusterID == cid, ]
+  data.frame(
+    ClusterID = cid,
+    LocationID = paste(subset$LocationID, collapse = ","),
+    Lat = subset$Lat[1],
+    Lng = subset$Lng[1],
+    Elevation = subset$Elevation[1],
+    stringsAsFactors = FALSE
+  )
+}))
+
+# === Step 6: Write cluster summary ===
+write.table(cluster_summary, node_summary_file, sep = "\t", row.names = FALSE, quote = FALSE)
