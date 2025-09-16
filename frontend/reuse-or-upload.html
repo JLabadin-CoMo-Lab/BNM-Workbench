@@ -12,8 +12,11 @@
       <p class="text-muted">We found both uploaded data and analysis output for this module.</p>
 
       <div class="mb-3">
-        <a class="btn btn-outline-primary me-2" id="reuseLink">📊 View Results</a>
-        <a href="/upload.html" class="btn btn-outline-danger">🔁 Run New Analysis</a>
+        <!-- <a class="btn btn-outline-primary me-2" id="reuseLink">📊 View Results</a>
+        <a href="/upload.html" class="btn btn-outline-danger">🔁 Run New Analysis</a> -->
+        <a id="reuseLink" class="btn btn-outline-primary me-2">📊 View Results</a>
+        <a id="newRunLink" class="btn btn-outline-danger">🔁 Run New Analysis</a>
+
       </div>
     </div>
     <a href="/select-module.html" class="btn btn-sm btn-outline-secondary mb-3">← Back to Home</a>
@@ -25,8 +28,15 @@
     const user = params.get('user');
     const module = params.get('module');
 
-    const reuseLink = document.getElementById('reuseLink');
-    reuseLink.href = `/analysis-result.html?user=${encodeURIComponent(user)}&module=${encodeURIComponent(module)}`;
+    document.getElementById('reuseLink').href = `/analysis-result.html?user=${encodeURIComponent(user)}&module=${encodeURIComponent(module)}`;
+    document.getElementById('newRunLink').href =`/upload.html?user=${encodeURIComponent(user)}&module=${encodeURIComponent(module)}&warn=1`;
+
+    // const params = new URLSearchParams(window.location.search);
+    // const user = params.get('user');
+    // const module = params.get('module');
+
+    // const reuseLink = document.getElementById('reuseLink');
+    // reuseLink.href = `/analysis-result.html?user=${encodeURIComponent(user)}&module=${encodeURIComponent(module)}`;
   </script>
 </body>
 </html>
