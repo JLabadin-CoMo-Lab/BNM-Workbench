@@ -38,6 +38,11 @@ write.table(new_loc.row,file = "res/Location_ID.txt",sep = '\t',
             quote = FALSE,
             row.names=F, 
             col.names=F)
+write.table(new_loc.row,file = "res/Location_ID1.txt",sep = '\t', 
+            append = TRUE, 
+            quote = FALSE,
+            row.names=F, 
+            col.names=F)
 
 update_loc.node <- read.table("res/Location_ID.txt",sep = '\t',header = TRUE)
 

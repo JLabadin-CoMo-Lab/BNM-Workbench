@@ -40,4 +40,5 @@ for(i in 1:nrow(loc.raw)){
 }
 
 write.table(loc.raw,"res/Location_Node.txt",sep = '\t',row.names = FALSE,col.names = TRUE,quote = FALSE)
+write.table(loc.raw,"res/Location_Node2.txt",sep = '\t',row.names = FALSE,col.names = TRUE,quote = FALSE)
 

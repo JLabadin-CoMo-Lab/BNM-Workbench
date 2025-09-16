@@ -57,3 +57,4 @@ loc_node.write <- loc_node
 loc_node.write$Date <- vapply(loc_node.write$Date, paste,  collapse = ", ", character(1L))
 write.table(loc_node.write,"res/Location_Node.txt",sep = '\t',row.names = FALSE,col.names = TRUE,quote = FALSE)
 
+write.table(loc_node.write,"res/Location_Node1.txt",sep = '\t',row.names = FALSE,col.names = TRUE,quote = FALSE)
