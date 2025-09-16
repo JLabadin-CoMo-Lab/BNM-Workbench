@@ -49,7 +49,7 @@ write.table(raw.contact.tracing,file = "res/contact_tracing_LID.txt",sep = '\t',
             col.names=TRUE)
 
 #### HID generation
-human_info <- read.table("Human_meta.txt",sep = '\t',header = T)
+human_info <- read.table("human_meta.txt",sep = '\t',header = T)
 
 
 exist.human.ID <- retrieve_exHID()
