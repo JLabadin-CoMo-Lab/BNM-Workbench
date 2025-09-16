@@ -21,7 +21,7 @@ source("../../../Script/c19_modules/Human_node_quantification_Location_node_tabu
 source("../../../Script/c19_modules/plotContactGraph.R")
 
 cat("🚀 Running: Location Node Quantifica\n")
-source("../../../Script/c19_modules/location_node_quantification.R")
+source("../../../Script/c19_modules/Location_node_quantification.R")
 
 cat("🚀 Running: Formation of Contact Matrix and Link Weight Quantification\n")
 source("../../../Script/c19_modules/Link_weight_quantificatin_CSM_formation.R")
