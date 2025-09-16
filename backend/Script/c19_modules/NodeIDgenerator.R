@@ -21,14 +21,22 @@ a <- geocoding(new_loc)
 new_loc_data <- data.frame(
   LID = newID,
   Location = new_loc,
-  LatLng = sapply(a, function(x) paste(unlist(x), collapse = ","))
+  LatLng = sapply(a, function(x) {
+    lat <- unlist(x$lat)[1]
+    lng <- unlist(x$lng)[1]
+    paste(lat, lng, sep = ",")
+  })
 )
 
 new_loc.row <- data.frame(
   LID = newID,
   Location = new_loc,
   Building.Type = NA,
-  LatLng = sapply(a, function(x) paste(unlist(x), collapse = ",")),
+  LatLng = sapply(a, function(x) {
+    lat <- unlist(x$lat)[1]
+    lng <- unlist(x$lng)[1]
+    paste(lat, lng, sep = ",")
+  }),
   Location.Type = NA,
   Q = NA
 )
