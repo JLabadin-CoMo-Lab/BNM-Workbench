@@ -29,7 +29,16 @@
   <div class="container-fluid mt-4 px-4">
     <h2 class="mb-3 text-primary">🔥 Cluster Hotspot Map</h2>
 
-    <!-- Radius control (only shown for COVID-19) -->
+    
+
+    <div id="map"></div>
+
+    <div class="mt-4">
+      <h5>🧭 Navigate to Cluster:</h5>
+      <select id="hotspotDropdown" class="form-select w-auto mb-3">
+        <option disabled selected>Choose a hotspot...</option>
+      </select>
+      <!-- Radius control (only shown for COVID-19) -->
     <div id="covidRadiusControl" class="mb-3" style="display:none;">
       <label for="radiusSelect" class="form-label">Circle Radius:</label>
       <select id="radiusSelect" class="form-select w-auto">
@@ -46,19 +55,11 @@
         <option value="1000">1000 m</option>
       </select>
     </div>
-
-    <div id="map"></div>
-
-    <div class="mt-4">
-      <h5>🧭 Navigate to Cluster:</h5>
-      <select id="hotspotDropdown" class="form-select w-auto mb-3">
-        <option disabled selected>Choose a hotspot...</option>
-      </select>
-
       <div id="hotspotList" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"></div>
     </div>
 
     <div id="errorMsg" class="text-danger mt-3"></div>
+
   </div>
 
   <script>
